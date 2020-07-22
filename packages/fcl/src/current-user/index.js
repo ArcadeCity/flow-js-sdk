@@ -42,7 +42,7 @@ const DATA = `{
 }`
 
 const HANDLERS = {
-  [INIT]: ctx => {
+  [INIT]: (ctx) => {
     ctx.merge(JSON.parse(DATA))
   },
   [SUBSCRIBE]: (ctx, letter) => {
@@ -68,11 +68,11 @@ const HANDLERS = {
   },
 }
 
-const identity = v => v
+const identity = (v) => v
 const spawnCurrentUser = () => spawn(HANDLERS, NAME)
 
 async function authenticate() {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve) => {
     spawnCurrentUser()
 
     const user = await snapshot()
@@ -82,7 +82,10 @@ async function authenticate() {
       handshake: await config().get("challenge.handshake"),
       scope: await config().get("challenge.scope"),
       nonce: "asdf",
-      l6n: window.location.origin,
+      l6n:
+        window && window.location && window.location.origin
+          ? window.location.origin
+          : "",
     })
 
     window.addEventListener("message", async ({data, origin}) => {
@@ -96,7 +99,7 @@ async function authenticate() {
         headers: {
           "Content-Type": "application/json",
         },
-      }).then(d => d.json())
+      }).then((d) => d.json())
 
       send(NAME, SET_CURRENT_USER, {
         ...user,
@@ -125,11 +128,11 @@ async function authorization(account) {
     // TODO: There will be an update to the getAccount that will
     //       make the key consitent ie: { keyId, sequenceNum, publicKey }
     //       instead of the current equivalent { index, sequenceNumber }
-    const key = acct.keys.find(key => key.index === user.keyId)
+    const key = acct.keys.find((key) => key.index === user.keyId)
     sequenceNum = key.sequenceNumber
   }
 
-  const signingFunction = async message => {
+  const signingFunction = async (message) => {
     const user = await snapshot()
     const acct = await info()
     const resp = await fetchHook(user.authorizations[0], message)
@@ -168,7 +171,7 @@ function param(key) {
 function subscribe(callback) {
   spawnCurrentUser()
   const EXIT = "@EXIT"
-  const self = spawn(async ctx => {
+  const self = spawn(async (ctx) => {
     ctx.send(NAME, SUBSCRIBE)
     while (1) {
       const letter = await ctx.receive()
