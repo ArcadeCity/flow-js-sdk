@@ -9,7 +9,7 @@ const invariant = (fact, msg, ...rest) => {
     const error = new Error(`INVARIANT ${msg}`)
     error.stack = error.stack
       .split("\n")
-      .filter(d => !/at invariant/.test(d))
+      .filter((d) => !/at invariant/.test(d))
       .join("\n")
     console.error("\n\n---\n\n", error, "\n\n", ...rest, "\n\n---\n\n")
     throw error
@@ -17,7 +17,7 @@ const invariant = (fact, msg, ...rest) => {
 }
 
 // Will be handled by fcl.user(addr).info()
-const getAccount = async addr => {
+const getAccount = async (addr) => {
   const {account} = await fcl.send([fcl.getAccount(addr)])
   return account
 }
@@ -29,7 +29,7 @@ const authorization = async (account = {}) => {
   let sequenceNum
   if (account.role.proposer) sequenceNum = key.sequenceNumber
 
-  const signingFunction = async data => {
+  const signingFunction = async (data) => {
     return {
       addr: user.address,
       keyId: key.index,
@@ -61,8 +61,8 @@ export const createFlowAccount = async (contract = CONTRACT) => {
         }
         execute {
           let account = AuthAccount(payer: self.payer)
-          account.addPublicKey("${p => p.publicKey}".decodeHex())
-          account.setCode("${p => p.code}".decodeHex())
+          account.addPublicKey("${(p) => p.publicKey}".decodeHex())
+          account.setCode("${(p) => p.code}".decodeHex())
         }
       }
     `,
@@ -80,7 +80,9 @@ export const createFlowAccount = async (contract = CONTRACT) => {
   ])
 
   const {events} = await fcl.tx(response).onceSealed()
-  const accountCreatedEvent = events.find(d => d.type === "flow.AccountCreated")
+  const accountCreatedEvent = events.find(
+    (d) => d.type === "flow.AccountCreated"
+  )
   invariant(accountCreatedEvent, "No flow.AccountCreated found", events)
   let addr = accountCreatedEvent.data.address
   // a standardized string format for addresses is coming soon
@@ -89,7 +91,7 @@ export const createFlowAccount = async (contract = CONTRACT) => {
   invariant(addr, "an address is required")
 
   const account = await getAccount(addr)
-  const key = account.keys.find(d => d.publicKey === keys.publicKey)
+  const key = account.keys.find((d) => d.publicKey === keys.publicKey)
   invariant(
     key,
     "could not find provided public key in on-chain flow account keys"

@@ -174,17 +174,11 @@ app.get("/flow/authorize", cors(), (req, res) => {
   })
 })
 
-app
-  .route("/")
-  .get(render)
-  .head(render)
+app.route("/").get(render).head(render)
 
 app.use("/graphql", graphqlHTTP(graphqlConfig))
 
-app
-  .route("*")
-  .get(render)
-  .head(render)
+app.route("*").get(render).head(render)
 
 const script = `
 import * as fcl from "@onflow/fcl"
@@ -218,7 +212,7 @@ export const start = async () => {
   clipboardy.writeSync(script)
   await promisify(app.listen)
     .bind(app)(CONFIG.PORT)
-    .then(async _ => {
+    .then(async (_) => {
       console.log(emoji.emojify(intro))
 
       const currentVersion = pkgJSON.version

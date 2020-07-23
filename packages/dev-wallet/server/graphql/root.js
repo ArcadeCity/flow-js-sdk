@@ -13,7 +13,7 @@ const invariant = (fact, msg, ...rest) => {
     const error = new Error(`GQL INVARIANT ${msg}`)
     error.stack = error.stack
       .split("\n")
-      .filter(d => !/at invariant/.test(d))
+      .filter((d) => !/at invariant/.test(d))
       .join("\n")
     console.error("\n\n---\n\n", error, "\n\n", ...rest, "\n\n---\n\n")
     throw error
@@ -82,8 +82,8 @@ export const genHandshake = ({input}) => {
   console.log("GQL -- mutation/genHandshake", {input})
   const {sessionId, l6n, nonce, scope} = input
   invariant(sessionId, "sessionId required")
-  invariant(l6n, "l6n required")
-  invariant(nonce, "nonce required")
+  // invariant(l6n, "l6n required")
+  // invariant(nonce, "nonce required")
 
   // exchange sessionId for userId
   const userId = sessionFor(sessionId)
@@ -91,7 +91,12 @@ export const genHandshake = ({input}) => {
 
   // generate handshakeId for given user and dapp
   // and return it
-  return createHandshake({userId, l6n, nonce, scope})
+  return createHandshake({
+    userId,
+    l6n: "l6nplaceholder",
+    nonce: "2iu3fhijasf",
+    scope,
+  })
 }
 
 // Returns the handshake info for a given sessionId and handshakeId
